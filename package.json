@@ -1,0 +1,22 @@
+{
+  "name": "web-crawler",
+  "version": "0.0.1",
+  "private": false,
+  "author": {
+    "name": "Dotter",
+    "email": "info@dotter.me"
+  },
+  "keywords": [
+    "node",
+    "retailer",
+    "script",
+    "casper"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:shawnLiujianwei/web-crawler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dotterme/dotter-node-retailer-scripts/issues"
+  }
+}
