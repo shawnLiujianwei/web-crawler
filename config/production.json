@@ -1,0 +1,39 @@
+{
+  "mongo": {
+    "db": "web_crawler",
+    "host": "data-eu.dotter.me",
+    "port": 3282
+  },
+  "nodeLog": {
+    "configuration": {
+      "appenders": [
+        {
+          "type": "console"
+        },
+        {
+          "type": "dateFile",
+          "filename": "/home/ubuntu/logs/nts-crawler-output.log",
+          "pattern": "-yyyy-MM-dd",
+          "alwaysIncludePattern": true,
+          "backups": 10
+        },
+        {
+          "type": "logLevelFilter",
+          "level": "WARN",
+          "appender": {
+            "type": "dateFile",
+            "filename": "/home/ubuntu/logs/nts-crawler-error.log",
+            "pattern": "-yyyy-MM-dd",
+            "alwaysIncludePattern": true,
+            "backups": 10,
+            "level": "debug"
+          }
+        }
+      ],
+      "levels": {
+        "[all]": "info"
+      },
+      "replaceConsole": true
+    }
+  }
+}
