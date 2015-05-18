@@ -94,8 +94,11 @@ function _scrape(productURL, selectors, port, browser) {
                         tmp.status = true;
                         tmp.stock = "out-of-stock";
                         delete tmp.errors;
-                    } else {
+                    } else if(_onlyOOSError(tmp.errors)) {
+                        tmp.status = true;
                         tmp.stock = "in-stock";
+                    } else {
+                        
                     }
                     resolve(tmp)
                 });
@@ -115,6 +118,10 @@ function _scrape(productURL, selectors, port, browser) {
 
 
     });
+}
+
+function _onlyOOSError(errors) {
+    return !errors ? true : (errors.length === 1 && errors[0].selector === "oos")
 }
 
 function _checkValidBrowser(browser) {
