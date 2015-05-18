@@ -13,12 +13,12 @@ exports.test = function (req, res) {
     res.json({
         "message": "Begin to test"
     });
-    //_runTest();
+    _runTest();
 }
 
 function _runTest() {
     var url = "http://www.tesco.com/groceries/product/details/?id=255066698";
-    url = "http://item.taobao.com/item.htm?spm=a217j.7695524.1998513388.3.g6nKdH&id=4050140491";
+    //url = "http://item.taobao.com/item.htm?spm=a217j.7695524.1998513388.3.g6nKdH&id=4050140491";
     var array = [];
     for (var i = 0; i < 10; i++) {
         array.push(url);
@@ -28,7 +28,7 @@ function _runTest() {
     var start = new Date();
     var count = 0;
     return Promise.map(array, function (pr) {
-        return crawler.priceSpider(pr, "zh_cn", null, "phantomjs")
+        return crawler.priceSpider(pr, "en_gb", null, "phantomjs")
             .then(function (t) {
                 count++;
                 console.log("---------'%s'----------", count);

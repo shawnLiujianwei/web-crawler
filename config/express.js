@@ -32,12 +32,5 @@ module.exports = function (app) {
         // only use in development
         app.use(errorHandler())
     }
-    var router = express.Router();
-    router.get("/test", function (req, res) {
-        console.log("------------");
-        res.json({
-            "message": "11123"
-        })
-    })
 
 };
