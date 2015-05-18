@@ -16,11 +16,6 @@ selenium.install({
             version: '2.15',
             arch: process.arch,
             baseURL: 'http://chromedriver.storage.googleapis.com'
-        },
-        "phantomjs": {
-            version: "1.9.8",
-            arch: process.arch,
-            baseURL: 'https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-1.9.8-linux-x86_64.tar.bz2'
         }
     },
     logger: function (message) {

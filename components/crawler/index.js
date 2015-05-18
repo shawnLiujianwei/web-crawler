@@ -16,15 +16,15 @@ exports.priceSpider = crawlerExecutor.priceSpider;
 
 exports.setupCrawlerServer = function () {
     var hubPort = listenerConfig.seleniumHub;
-    return seleniumServer.createHub()
+    return seleniumServer.createHub(hubPort)
         .then(function () {
-            //return Promise.map(listenerConfig.seleniumServer, function (port) {
-            //    return seleniumServer.registerSeleniumNode(hubPort, port);
-            //})
+            return Promise.map(listenerConfig.seleniumServer, function (port) {
+                return seleniumServer.registerSeleniumNode(hubPort, port);
+            })
         })
-        .then(function(){
-            return Promise.map(listenerConfig.phantomCluster,function(port){
-               //return phantomInstance.registerPhantomNode(hubPort,port);
+        .then(function () {
+            return Promise.map(listenerConfig.phantomCluster, function (port) {
+                return phantomInstance.registerPhantomNode(hubPort, port);
             });
         })
 }
