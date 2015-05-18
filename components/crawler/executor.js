@@ -94,11 +94,12 @@ function _scrape(productURL, selectors, port, browser) {
                         tmp.status = true;
                         tmp.stock = "out-of-stock";
                         delete tmp.errors;
-                    } else if(_onlyOOSError(tmp.errors)) {
+                    } else if (_onlyOOSError(tmp.errors)) {
                         tmp.status = true;
                         tmp.stock = "in-stock";
+                        delete tmp.errors;
                     } else {
-                        
+
                     }
                     resolve(tmp)
                 });
