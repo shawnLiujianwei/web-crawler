@@ -35,5 +35,22 @@
       },
       "replaceConsole": true
     }
+  },
+  "listener": {
+    "port": 7001,
+    "memoryUsage": 0.90,
+    "failureRate": {
+      "rate": 0.20,
+      "proceed": 200
+    },
+    "seleniumHub": 4444,
+    "phantomCluster": [
+      7010,
+      7011,
+      7012,
+      7013
+    ],
+    "seleniumServer": [
+    ]
   }
 }

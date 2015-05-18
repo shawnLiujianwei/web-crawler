@@ -13,7 +13,7 @@ var crawler = require("./components/crawler");
 //    })
 
 var url = "http://www.tesco.com/groceries/product/details/?id=255066698";
-url = "http://item.taobao.com/item.htm?spm=a217j.7695524.1998513388.3.g6nKdH&id=4050140491";
+//url = "http://item.taobao.com/item.htm?spm=a217j.7695524.1998513388.3.g6nKdH&id=4050140491";
 var array = [];
 for (var i = 0; i < 100; i++) {
     array.push(url);
@@ -23,7 +23,7 @@ var Promise = require("bluebird");
 var start = new Date();
 var count = 0;
 Promise.map(array, function (pr) {
-    return crawler.priceSpider(pr, "zh_cn", null, "phantomjs")
+    return crawler.priceSpider(pr, "en_gb", null, "phantomjs")
         .then(function (t) {
             count++;
             console.log("---------'%s'----------", count);

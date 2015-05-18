@@ -11,6 +11,10 @@ var db = require("mongo-bluebird").create({
     port: settings.port
 });
 var col = db.collection("scrapecache");
-exports.save = function (list) {
+exports.insert = function (list) {
     return col.insert(list);
+}
+
+exports.query = function (filter) {
+    return col.find(filter);
 }

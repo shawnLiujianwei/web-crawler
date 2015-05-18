@@ -27,6 +27,9 @@ exports.createHub = function (port) {
                 args.push("-Dwebdriver.chrome.driver=");
                 args.push(_getChromedriverPaht());
                 args.push("-role hub -port " + port);
+                args.push("-newSessionWaitTimeout 5000")
+                args.push("-browserTimeout 10000");
+                // args.push("maxInstances=5")
                 var isRejected = false;
                 var process = Process.exec(args.join(" "), function (err, data) {
                     logger.error(err);
@@ -38,10 +41,10 @@ exports.createHub = function (port) {
                         if (!isRejected) {
                             logger.info("Start selenium Hub on port '%s'", port);
                             process.stdout.on('data', function (data) {
-                                logger.info("Selenium HUB :" + data.toString());
+                                logger.debug("Selenium HUB :" + data.toString());
                             });
                             process.stderr.on('data', function (data) {
-                                logger.error("Selenium HUB :" + data.toString());
+                                logger.debug("Selenium HUB :" + data.toString());
                             });
                             resolve(port);
                         }
@@ -82,10 +85,10 @@ exports.registerSeleniumNode = function (hubPort, nodePort) {
                         if (!isRejected) {
                             logger.info("Register selenium-standalone node '%s' to selenium hub '%s'", nodePort, hubPort);
                             process.stdout.on('data', function (data) {
-                                logger.info("Selenium Node :" + data.toString());
+                                logger.debug("Selenium Node stdout:" + data.toString());
                             });
                             process.stderr.on('data', function (data) {
-                                logger.error("Selenium Node :" + data.toString());
+                                logger.debug("Selenium Node stderr:" + data.toString());
                             });
                             resolve();
                         }

@@ -12,19 +12,29 @@ var async = require("async");
 var useSeleniumServer = true;
 var path = require("path");
 var fs = require("fs");
+var cacheServicae = require("../db/cache");
 exports.priceSpider = function (productUrl, locale, site, browser) {
-    return retailerService.extractDomain(site, productUrl)
-        .then(function (retailerID) {
-            return retailerService.getSelector(locale, retailerID)
-        })
-        .then(function (selectoConfig) {
-            return _scrape(productUrl, selectoConfig, browser);
-        })
-        .then(function (product) {
-            return product;
+    return retailerService.getSelector(productUrl, locale, site)
+        .then(function (selectorConfig) {
+            if (selectorConfig && selectorConfig.status) {
+                return _scrape(productUrl, selectorConfig.selectors, browser)
+                    .then(function (product) {
+                        //return product;
+                        return cacheServicae.insert(product)
+                            .then(function () {
+                                return product;
+                            })
+                    })
+            } else {
+                return selectorConfig;
+            }
         })
         .catch(function (err) {
             logger.error(err);
+            return {
+                "status": false,
+                "message": err.message || err
+            };
         });
 }
 
@@ -52,15 +62,7 @@ function _scrape(productURL, selectors, browser) {
                 "errors": []
             };
 
-            //driver.wait(until.elementIsVisible(driver.findElement(By.css("#itemDetails"))), 5000)
-            //    .then(function () {
-            //logger.info("Page loaded");
-            //return driver.takeScreenshot()
-            //    .then(function (data) {
-            //        writeScreenshot(data, 'out1.png');
-            //    })
-            //    .then(function () {
-            logger.info("Begin to scrape");
+            logger.info("scraping ", productURL);
             async.until(function isDone() {
                 return selectors.length === 0;
             }, function next(callback) {
@@ -87,6 +89,7 @@ function _scrape(productURL, selectors, browser) {
                     })
             }, function done() {
                 driver.quit();
+                tmp.updateDate = new Date();
                 resolve(tmp)
             });
             //})
