@@ -14,11 +14,11 @@ var path = require("path");
 var fs = require("fs");
 var cacheServicae = require("../db/cache");
 var errorLog = require("../db/errorLog");
-exports.priceSpider = function (productUrl, locale, site, port) {
+exports.priceSpider = function (productUrl, locale, site, port, borwser) {
     return retailerService.getSelector(productUrl, locale, site)
         .then(function (selectorConfig) {
             if (selectorConfig && selectorConfig.status) {
-                return _scrape(productUrl, selectorConfig.selectors, port)
+                return _scrape(productUrl, selectorConfig.selectors, port, borwser)
                     .then(function (product) {
                         //return product;
                         return cacheServicae.insert(product)
@@ -39,31 +39,27 @@ exports.priceSpider = function (productUrl, locale, site, port) {
         });
 }
 
-function _scrape(productURL, selectors, port) {
-    //if (!browser) {
-    //    browser = "firefox";
-    //}
-    var browser = "phantomjs";
+function _scrape(productURL, selectors, port, browser) {
+    if (!browser) {
+        browser = "phantomjs";
+    }
     return new Promise(function (resolve, reject) {
 
         try {
             if (_checkValidBrowser(browser)) {
-                var driver = "";
-                if (useSeleniumServer) {
-                    driver = new webdriver.Builder()
-                        .forBrowser(browser)
-                        .usingServer('http://127.0.0.1:' + port)
-                        //.usingServer('http://127.0.0.1:9444')
-                        .build();
-                } else {
-                    driver = new webdriver.Builder()
-                        .forBrowser(browser)
-                        .build();
+                var usingServer = 'http://127.0.0.1:' + port;
+                if (browser !== "phantomjs") {
+                    usingServer = "http://127.0.0.1:4444/wd/hub"
                 }
+                var driver = new webdriver.Builder()
+                    .forBrowser(browser)
+                    .usingServer(usingServer)
+                    .build();
                 driver.get(productURL);
                 var tmp = {
                     "status": true,
-                    "errors": []
+                    "errors": [],
+                    "productURL": productURL
                 };
 
                 logger.info("scraping ", productURL);
@@ -94,6 +90,13 @@ function _scrape(productURL, selectors, port) {
                 }, function done() {
                     driver.quit();
                     tmp.updateDate = new Date();
+                    if (tmp.oos) {
+                        tmp.status = true;
+                        tmp.stock = "out-of-stock";
+                        delete tmp.errors;
+                    } else {
+                        tmp.stock = "in-stock";
+                    }
                     resolve(tmp)
                 });
                 //})

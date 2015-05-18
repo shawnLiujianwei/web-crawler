@@ -25,3 +25,14 @@ exports.summary = function (req, res) {
             Error[500](req, res, err);
         })
 }
+
+exports.clean = function(req,res) {
+    cacheService.remove({})
+        .then(function(list){
+            res.json(list);
+        })
+        .catch(function (err) {
+            logger.error(err);
+            Error[500](req, res, err);
+        })
+}

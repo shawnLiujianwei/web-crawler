@@ -249,6 +249,51 @@ var staticData = [
                         "content": "div.desc > h1 > span",
                         "field": "name",
                         "scrapeType": "text"
+                    }, {
+                        "selectorType": "css",
+                        "content": "div.noStock p.unavailableMsg",
+                        "field": "oos",
+                        "scrapeType": "text"
+                    }
+                ]
+            }
+            , {
+                "domain": "sainsburys.co.uk",
+                "id": "groceries.sainsburys.co.uk",
+                "selectors": [
+                    {
+                        "selectorType": "css",
+                        "content": '#content > div.section.productContent > div.mainProductInfoWrapper > div > div.productSummary > div.promotion > p > a',
+                        "field": "price_now",
+                        "scrapeType": "text"
+                    },
+                    {
+                        "selectorType": "css",
+                        "content": "#content > div.section.productContent > div.mainProductInfoWrapper > div > div.productSummary > h1",
+                        "field": "name",
+                        "scrapeType": "text"
+                    }, {
+                        "selectorType": "css",
+                        "content": "div.noStock p.unavailableMsg",
+                        "field": "oos",
+                        "scrapeType": "text"
+                    }
+                ]
+            }, {
+                "domain": "waitrose.com",
+                "id": "waitrose.com",
+                "selectors": [
+                    {
+                        "selectorType": "css",
+                        "content": 'p.price > strong',
+                        "field": "price_now",
+                        "scrapeType": "text"
+                    },
+                    {
+                        "selectorType": "css",
+                        "content": "div.l-content > h1 > em",
+                        "field": "name",
+                        "scrapeType": "text"
                     }
                 ]
             }

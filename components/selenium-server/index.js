@@ -24,8 +24,8 @@ exports.createHub = function (port) {
                 args.push("java")
                 args.push("-jar");
                 args.push(seleniumJar);
-                args.push("-Dwebdriver.chrome.driver=");
-                args.push(_getChromedriverPaht());
+                args.push("-Dwebdriver.chrome.driver=" + _getChromedriverPaht());
+                //args.push(_getChromedriverPaht());
                 args.push("-role hub -port " + port);
                 args.push("-newSessionWaitTimeout 5000")
                 args.push("-browserTimeout 10000");
@@ -69,8 +69,8 @@ exports.registerSeleniumNode = function (hubPort, nodePort) {
             args.push("java")
             args.push("-jar");
             args.push(seleniumJar);
-            args.push("-Dwebdriver.chrome.driver=");
-            args.push(_getChromedriverPaht());
+            args.push("-Dwebdriver.chrome.driver=" + _getChromedriverPaht());
+            //args.push(_getChromedriverPaht());
             args.push("-role node -hub http://127.0.0.1:" + hubPort);
             args.push("-port " + nodePort);
             return new Promise(function (resolve, reject) {

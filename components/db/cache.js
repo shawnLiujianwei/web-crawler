@@ -18,3 +18,7 @@ exports.insert = function (list) {
 exports.query = function (filter) {
     return col.find(filter);
 }
+
+exports.remove = function (filter) {
+    return col.remove(filter);
+}

@@ -4,6 +4,9 @@
 
 var crawler = require("../../components/crawler");
 var Error = require("../../components/errors");
+var productService = require("../../components/db/product");
+var logger = require("node-config-logger").getLogger("app/scrape/scrape.controller.js");
+var Promise = require("bluebird");
 exports.scrape = function (req, res) {
     var body = req.body;
 
@@ -17,27 +20,23 @@ exports.test = function (req, res) {
 }
 
 function _runTest() {
-    var url = "http://www.tesco.com/groceries/product/details/?id=255066698";
     //url = "http://item.taobao.com/item.htm?spm=a217j.7695524.1998513388.3.g6nKdH&id=4050140491";
-    var array = [];
-    for (var i = 0; i < 10; i++) {
-        array.push(url);
-    }
+    return productService.query("tesco.com")
+        .then(function (list) {
+            return productService.query("wairtose.com")
+                .then(function (list1) {
+                    var array = [];
+                    Array.prototype.push.apply(array, list);
+                    Array.prototype.push.apply(array, list1);
+                    Array.prototype.push.apply(array, array);
+                    Array.prototype.push.apply(array, array);
+                    Array.prototype.push.apply(array, array);
+                    logger.warn("Totally got '%s' products", array.length);
+                    return Promise.map(array, function (url) {
+                        return crawler.priceSpider(url, "en_gb", null, "phantomjs")
+                    })
+                })
 
-    var Promise = require("bluebird");
-    var start = new Date();
-    var count = 0;
-    return Promise.map(array, function (pr) {
-        return crawler.priceSpider(pr, "en_gb", null, "phantomjs")
-            .then(function (t) {
-                count++;
-                console.log("---------'%s'----------", count);
-                console.log(t);
-            })
-    })
-        .then(function () {
-            var end = new Date();
-            console.log("Take '%s' minutes", (end.getTime() - start.getTime()) / 1000 / 60);
-            _runTest();
+
         })
 }
