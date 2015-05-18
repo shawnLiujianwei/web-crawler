@@ -13,11 +13,12 @@ var useSeleniumServer = true;
 var path = require("path");
 var fs = require("fs");
 var cacheServicae = require("../db/cache");
-exports.priceSpider = function (productUrl, locale, site, browser) {
+var errorLog = require("../db/errorLog");
+exports.priceSpider = function (productUrl, locale, site, port) {
     return retailerService.getSelector(productUrl, locale, site)
         .then(function (selectorConfig) {
             if (selectorConfig && selectorConfig.status) {
-                return _scrape(productUrl, selectorConfig.selectors, browser)
+                return _scrape(productUrl, selectorConfig.selectors, port)
                     .then(function (product) {
                         //return product;
                         return cacheServicae.insert(product)
@@ -38,65 +39,75 @@ exports.priceSpider = function (productUrl, locale, site, browser) {
         });
 }
 
-function _scrape(productURL, selectors, browser) {
-    if (!browser) {
-        browser = "firefox";
-    }
+function _scrape(productURL, selectors, port) {
+    //if (!browser) {
+    //    browser = "firefox";
+    //}
+    var browser = "phantomjs";
     return new Promise(function (resolve, reject) {
-        if (_checkValidBrowser(browser)) {
-            var driver = "";
-            if (useSeleniumServer) {
-                driver = new webdriver.Builder()
-                    .forBrowser(browser)
-                    .usingServer('http://127.0.0.1:4444/wd/hub')
-                    //.usingServer('http://127.0.0.1:9444')
-                    .build();
-            } else {
-                driver = new webdriver.Builder()
-                    .forBrowser(browser)
-                    .build();
-            }
-            driver.get(productURL);
-            var tmp = {
-                "status": true,
-                "errors": []
-            };
 
-            logger.info("scraping ", productURL);
-            async.until(function isDone() {
-                return selectors.length === 0;
-            }, function next(callback) {
-                var selector = selectors.shift();
-                var byC = "";
-                if (selector.selectorType === "css") {
-                    byC = By.css(selector.content);
+        try {
+            if (_checkValidBrowser(browser)) {
+                var driver = "";
+                if (useSeleniumServer) {
+                    driver = new webdriver.Builder()
+                        .forBrowser(browser)
+                        .usingServer('http://127.0.0.1:' + port)
+                        //.usingServer('http://127.0.0.1:9444')
+                        .build();
                 } else {
-                    byC = By.xpath(selector.content);
+                    driver = new webdriver.Builder()
+                        .forBrowser(browser)
+                        .build();
                 }
-                var element = driver.findElement(byC);
-                element.getText()
-                    .then(function (content) {
-                        tmp[selector.field] = content;
-                        callback()
-                    }, function onError(err) {
-                        logger.error(err.message);
-                        tmp.status = false;
-                        tmp.errors.push({
-                            "selector": selector.field,
-                            "message": err.message
-                        });
-                        callback();
-                    })
-            }, function done() {
-                driver.quit();
-                tmp.updateDate = new Date();
-                resolve(tmp)
-            });
-            //})
+                driver.get(productURL);
+                var tmp = {
+                    "status": true,
+                    "errors": []
+                };
+
+                logger.info("scraping ", productURL);
+                async.until(function isDone() {
+                    return selectors.length === 0;
+                }, function next(callback) {
+                    var selector = selectors.shift();
+                    var byC = "";
+                    if (selector.selectorType === "css") {
+                        byC = By.css(selector.content);
+                    } else {
+                        byC = By.xpath(selector.content);
+                    }
+                    var element = driver.findElement(byC);
+                    element.getText()
+                        .then(function (content) {
+                            tmp[selector.field] = content;
+                            callback()
+                        }, function onError(err) {
+                            logger.error(err.message);
+                            tmp.status = false;
+                            tmp.errors.push({
+                                "selector": selector.field,
+                                "message": err.message
+                            });
+                            callback();
+                        })
+                }, function done() {
+                    driver.quit();
+                    tmp.updateDate = new Date();
+                    resolve(tmp)
+                });
+                //})
 
 
-        } else {
-            logger.error("Invalid browser '%s'", browser);
+            } else {
+                logger.error("Invalid browser '%s'", browser);
+            }
+        } catch (err) {
+            logger.error(err);
+            errorLog.insert(err)
+                .then(function () {
+
+                })
         }
 
 
